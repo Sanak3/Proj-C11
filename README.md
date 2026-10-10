@@ -4,6 +4,15 @@
 
 ---
 
+## 👥 Integrantes do Grupo
+| Nome           | Matrícula   | Curso |
+|:---------------|:------------|:-----|
+| *Igor Araujo*  | *479*       | GES  |
+| *Kevin Lopes*  | *Matrícula* | GES  |
+| *Felipe Froes* | *Matrícula* | GES  |
+
+---
+
 ## 📌 Sobre o Projeto
 
 Este projeto consiste na aplicação prática do pipeline de **Ciência de Dados** para analisar e extrair insights valiosos a partir de um dataset real selecionado do Kaggle. O trabalho aborda etapas essenciais que vão desde o pré-processamento e higienização dos dados até a análise exploratória (EDA) e visualização gráfica, utilizando a biblioteca padrão do ecossistema de dados em Python.
@@ -77,3 +86,57 @@ O projeto é desenvolvido integralmente em **Python**, utilizando o conjunto de 
 ├── README.md
 └── requirements.txt                                          # Dependências do projeto
 ```
+
+---
+
+## 🚀 Como Executar o Projeto
+
+### 1. Clonar o repositório
+```bash
+git clone https://github.com/Sanak3/Proj-C11
+cd Proj-C11
+```
+
+### 2. Criar e ativar um ambiente virtual (recomendado)
+```bash
+# macOS / Linux
+python3 -m venv venv
+source venv/bin/activate
+
+# Windows
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 3. Instalar as dependências
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Executar as análises
+Você pode abrir o notebook interativo no Jupyter:
+```bash
+jupyter notebook notebooks/analise_projeto_c11.ipynb
+```
+Ou executar o script Python diretamente via terminal:
+```bash
+python main.py
+```
+
+---
+
+## 📈 Etapas da Análise de Dados
+
+1. **Entendimento do Problema e Exploração Inicial:** Inspeção das 19 colunas, tipos de dados, valores ausentes e inconsistências de formatação.
+2. **Limpeza e Pré-processamento:** Padronização de strings (ex: nomes de ferramentas e países), tratamento de valores ausentes e conversão de tipos numéricos.
+3. **Engenharia de Recursos (Feature Engineering):** Criação de métricas derivadas (ex: relação de tempo poupado por hora de uso).
+4. **Análise Exploratória e Resposta às 10 Perguntas:** Elaboração de tabelas descritivas e cruzamento de variáveis categóricas e numéricas.
+5. **Visualização de Dados:** Gráficos com paletas adequadas, títulos informativos e conclusões voltadas à tomada de decisão.
+6. **Conclusões e Insights:** Síntese dos achados e geração de valor a partir dos dados.
+
+---
+
+## 📄 Licença e Referências
+
+- Dataset original disponibilizado por **Eisha Tuz Zuhra** sob a licença [CC0: Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) no Kaggle.
+- Projeto desenvolvido para fins estritamente acadêmicos no curso de Engenharia do **Inatel**.
