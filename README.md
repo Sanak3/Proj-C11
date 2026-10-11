@@ -5,11 +5,11 @@
 ---
 
 ## 👥 Integrantes do Grupo
-| Nome           | Matrícula   | Curso |
-|:---------------|:------------|:-----|
-| *Igor Araujo*  | *479*       | GES  |
-| *Kevin Lopes*  | *Matrícula* | GES  |
-| *Felipe Froes* | *Matrícula* | GES  |
+| Nome                   | Matrícula | Curso |
+|:-----------------------|:----------|:------|
+| *Igor Araujo*          | *479*     | GES   |
+| *Kevin Lopes do vale*  | *1955*    | GEC   |
+| *Felipe Fróes Pereira* | *566*     | GES   |
 
 ---
 
