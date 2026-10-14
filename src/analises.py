@@ -567,12 +567,12 @@ def analisar_pergunta_7(
     profissao = df_prof["Profession"].fillna("")
 
     suporte_mask = profissao.str.contains(
-        r"Customer|Client|Kundenservice|Kundenbetreuer|Support|Service|Success|Experience|Administrative|Data Entry|Assistente|Atendimento",
+        r"Customer|Client|Kundenservice|Kundenbetreuer|Support|Service|Success|Experience|Administrative|Administrativo|Data Entry|Assistente|Atendimento",
         case=False,
         regex=True,
     )
     tecnologia_mask = profissao.str.contains(
-        r"Data|Daten|Software|Developer|Développeur|Softwareentwickler|Engineer|Ingenieur|Technology|Computer|Machine Learning|Desenvolvedor|Desenvolvedora|Engenheiro|Analista|Analyste|Intelligence|AI",
+        r"Data|Daten|Dados|Ciência de Dados|Software|Developer|Développeur|Softwareentwickler|Engineer|Ingenieur|Technology|Computer|Machine Learning|Desenvolvedor|Desenvolvedora|Engenheiro|Analista|Analyst|Analyste|Intelligence|Inteligência|Artificial|AI|Business Intelligence",
         case=False,
         regex=True,
     )
