@@ -6,11 +6,13 @@ Autores: Igor Araujo, Kevin Lopes do Vale, Felipe Fróes Pereira
 """
 
 import os
-from typing import Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from scipy.stats import chi2_contingency, kruskal, mannwhitneyu, spearmanr
+
 
 # Configuração visual padrão para gráficos elegantes e consistentes
 sns.set_theme(style="whitegrid", palette="deep")
@@ -473,91 +475,415 @@ def analisar_pergunta_5(
 
 
 # ==============================================================================
-# PERGUNTAS 6 A 10 (TEMPLATES E INSTRUÇÕES PARA O AMIGO CODAR)
+# PERGUNTAS 6 A 10 (IMPLEMENTADAS COM TESTES DE HIPÓTESES ESTATÍSTICOS)
 # ==============================================================================
 
 
-def analisar_pergunta_6(df: pd.DataFrame):
-    """TODO (Amigo): Pergunta 6 - Acurácia Percebida por Ferramenta
+def analisar_pergunta_6(
+    df: pd.DataFrame, salvar_grafico: Optional[str] = None
+) -> Tuple[pd.DataFrame, plt.Figure]:
+    """Pergunta 6: Acurácia Percebida por Ferramenta de IA.
 
-    Pergunta: Existe discrepância estatística na acurácia reportada
-    (Accuracy_Rating)
-              entre as diferentes ferramentas de IA (ChatGPT, Gemini, Claude, Copilot, etc.)?
-
-    Variáveis:
-        - AI_Tool (categórica)
-        - Accuracy_Rating (numérica, notas de 1 a 5)
-
-    Sugestão de Gráfico:
-        - Boxplot ou Violin Plot (sns.boxplot ou sns.violinplot) com ordenação pela mediana.
+    Avalia se existe discrepância estatisticamente significativa na acurácia
+    reportada (Accuracy_Rating) entre as diferentes ferramentas de IA através
+    do teste não-paramétrico de Kruskal-Wallis.
+    Gráfico: Boxplot de Acurácia Percebida por Ferramenta (ordenado pela mediana).
     """
-    pass
+    dados = df.dropna(subset=["AI_Tool", "Accuracy_Rating"]).copy()
+
+    # Teste estatístico não-paramétrico de Kruskal-Wallis
+    grupos = [grupo["Accuracy_Rating"].values for _, grupo in dados.groupby("AI_Tool")]
+    res_kruskal = kruskal(*grupos)
+
+    resumo = (
+        dados.groupby("AI_Tool")["Accuracy_Rating"]
+        .agg(["count", "mean", "median", "std"])
+        .round(2)
+    )
+    resumo.columns = ["Contagem", "Média", "Mediana", "Desvio_Padrão"]
+    resumo["Kruskal_H"] = round(float(res_kruskal.statistic), 3)
+    resumo["Valor_p"] = round(float(res_kruskal.pvalue), 4)
+
+    ordem_mediana = (
+        dados.groupby("AI_Tool")["Accuracy_Rating"]
+        .median()
+        .sort_values(ascending=False)
+        .index
+    )
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sns.boxplot(
+        data=dados,
+        x="AI_Tool",
+        y="Accuracy_Rating",
+        order=ordem_mediana,
+        palette="Blues_r",
+        hue="AI_Tool",
+        legend=False,
+        ax=ax,
+    )
+
+    sig_texto = (
+        "Diferença estatisticamente significativa (p < 0.05)"
+        if res_kruskal.pvalue < 0.05
+        else "Sem diferença estatisticamente significativa (p >= 0.05)"
+    )
+
+    ax.set_title(
+        f"Acurácia Percebida por Ferramenta de IA\n"
+        f"Kruskal-Wallis: H = {res_kruskal.statistic:.2f}, p-valor = {res_kruskal.pvalue:.3f} ({sig_texto})",
+        fontsize=13,
+        fontweight="bold",
+    )
+    ax.set_xlabel("Ferramenta de IA", fontsize=11)
+    ax.set_ylabel("Acurácia Percebida (1 a 5)", fontsize=11)
+    plt.xticks(rotation=25)
+
+    plt.tight_layout()
+    if salvar_grafico:
+        fig.savefig(salvar_grafico, bbox_inches="tight")
+    return resumo, fig
 
 
-def analisar_pergunta_7(df: pd.DataFrame):
-    """TODO (Amigo): Pergunta 7 - Renda Mensal e Áreas de Atuação
+def analisar_pergunta_7(
+    df: pd.DataFrame, salvar_grafico: Optional[str] = None
+) -> Tuple[pd.DataFrame, plt.Figure]:
+    """Pergunta 7: Renda Mensal e Áreas de Atuação.
 
-    Pergunta: Profissionais de áreas que dependem fortemente de IA (Tecnologia,
-    Dados)
-              apresentam rendas mensais (Monthly_Income) superiores aos que usam para suporte?
-
-    Variáveis:
-        - Monthly_Income (numérica)
-        - Profession ou AI_Purpose (categórica)
-        - Filtrar preferencialmente apenas 'User_Type == "Professional"'
-
-    Sugestão de Gráfico:
-        - Gráfico de barras horizontais com renda média/mediana (sns.barplot).
+    Compara rendas mensais (Monthly_Income) entre profissionais de Tecnologia/Dados/Desenvolvimento
+    versus Suporte/Administrativo via teste de Mann-Whitney U.
+    Gráfico: Boxplot comparativo com distribuição das rendas.
     """
-    pass
+    df_prof = df[df["User_Type"] == "Professional"].copy()
+    profissao = df_prof["Profession"].fillna("")
 
+    suporte_mask = profissao.str.contains(
+        r"Customer Support|Customer Service|Customer Success|Administrative|Data Entry|Assistente Administrativo|Atendimento ao Cliente",
+        case=False,
+        regex=True,
+    )
+    tecnologia_mask = profissao.str.contains(
+        r"Data|Software|Developer|Engineer|Information Technology|Computer Science|Machine Learning|Desenvolvedor|Desenvolvedora|Engenheiro|Analista de Dados|Artificial Intelligence",
+        case=False,
+        regex=True,
+    )
 
-def analisar_pergunta_8(df: pd.DataFrame):
-    """TODO (Amigo): Pergunta 8 - Nível Educacional e Adoção para Pesquisa
+    df_prof["Area"] = "Outras"
+    df_prof.loc[tecnologia_mask, "Area"] = "Tecnologia/Dados"
+    df_prof.loc[suporte_mask, "Area"] = "Suporte/Admin"
 
-    Pergunta: O uso de IA para Research e Studying é mais prevalente e avaliado de forma
-              diferente entre estudantes de graduação versus pós-graduação/mestrado/PhD?
+    dados = df_prof[df_prof["Area"].isin(["Tecnologia/Dados", "Suporte/Admin"])].dropna(
+        subset=["Monthly_Income"]
+    ).copy()
 
-    Variáveis:
-        - Education_Level (categórica: 'Undergraduate', 'Bachelor\'s', 'Master\'s', 'PhD')
-        - AI_Purpose (filtrar 'Research' e 'Studying')
-        - Satisfaction_Score / Accuracy_Rating
+    renda_tec = dados[dados["Area"] == "Tecnologia/Dados"]["Monthly_Income"]
+    renda_sup = dados[dados["Area"] == "Suporte/Admin"]["Monthly_Income"]
 
-    Sugestão de Gráfico:
-        - Gráfico de barras empilhadas ou agrupadas mostrando % de uso para Research/Studying.
+    res_mwu = mannwhitneyu(renda_tec, renda_sup)
+
+    resumo = (
+        dados.groupby("Area")["Monthly_Income"]
+        .agg(["count", "mean", "median", "std"])
+        .round(2)
+    )
+    resumo.columns = ["Contagem", "Média", "Mediana", "Desvio_Padrão"]
+    resumo["MannWhitney_U"] = round(float(res_mwu.statistic), 2)
+    resumo["Valor_p"] = round(float(res_mwu.pvalue), 4)
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.boxplot(
+        data=dados,
+        x="Area",
+        y="Monthly_Income",
+        palette=["#3470a3", "#e27c38"],
+        hue="Area",
+        legend=False,
+        ax=ax,
+    )
+
+    sig_texto = (
+        "Diferença significativa (p < 0.05)"
+        if res_mwu.pvalue < 0.05
+        else "Sem diferença significativa (p >= 0.05)"
+    )
+
+    ax.set_title(
+        f"Renda Mensal: Tecnologia/Dados vs. Suporte/Administrativo\n"
+        f"Mann-Whitney U: p-valor = {res_mwu.pvalue:.3f} ({sig_texto})",
+        fontsize=13,
+        fontweight="bold",
+    )
+    ax.set_xlabel("Área Profissional", fontsize=11)
+    ax.set_ylabel("Renda Mensal ($)", fontsize=11)
+
+    plt.tight_layout()
+    if salvar_grafico:
+        fig.savefig(salvar_grafico, bbox_inches="tight")
+    return resumo, fig
+
+def analisar_pergunta_8(
+    df: pd.DataFrame, salvar_grafico: Optional[str] = None
+) -> Tuple[Dict[str, Any], plt.Figure]:
+    """Pergunta 8: Nível Educacional e Adoção para Pesquisa.
+
+    Analisa a prevalência de uso de IA para Research/Studying (teste Qui-Quadrado)
+    e a avaliação de Acurácia e Satisfação (testes Mann-Whitney U) entre
+    estudantes de Graduação e Pós-graduação.
+    Gráfico: Painel com 3 subplots (Prevalência %, Acurácia e Satisfação).
     """
-    pass
+    mapa_nivel = {
+        "Bachelor's": "Graduação",
+        "Undergraduate": "Graduação",
+        "Master's": "Pós-graduação",
+        "PhD": "Pós-graduação",
+    }
+    df_estudante = df[df["User_Type"] == "Student"].copy()
+    df_estudante["Nivel"] = df_estudante["Education_Level"].map(mapa_nivel)
+
+    dados = df_estudante[
+        df_estudante["Nivel"].isin(["Graduação", "Pós-graduação"])
+    ].dropna(subset=["AI_Purpose"]).copy()
+
+    # 8A: Tabela de contingência e Qui-Quadrado para Research/Studying
+    dados["Usa_Pesquisa_Estudo"] = dados["AI_Purpose"].isin(["Research", "Studying"])
+    tabela_qui2 = pd.crosstab(dados["Nivel"], dados["Usa_Pesquisa_Estudo"])
+    res_qui2 = chi2_contingency(tabela_qui2)
+
+    # Proporções por finalidade para o gráfico 8A
+    tabela_prop = (
+        pd.crosstab(dados["Nivel"], dados["AI_Purpose"], normalize="index") * 100
+    ).round(2)
+
+    # 8B e 8C: Acurácia e Satisfação filtrando apenas quem usa para Research/Studying
+    dados_pesquisa = dados[dados["Usa_Pesquisa_Estudo"]].copy()
+
+    acc_grad = dados_pesquisa[dados_pesquisa["Nivel"] == "Graduação"]["Accuracy_Rating"].dropna()
+    acc_pos = dados_pesquisa[dados_pesquisa["Nivel"] == "Pós-graduação"]["Accuracy_Rating"].dropna()
+    res_mwu_acc = mannwhitneyu(acc_grad, acc_pos)
+
+    sat_grad = dados_pesquisa[dados_pesquisa["Nivel"] == "Graduação"]["Satisfaction_Score"].dropna()
+    sat_pos = dados_pesquisa[dados_pesquisa["Nivel"] == "Pós-graduação"]["Satisfaction_Score"].dropna()
+    res_mwu_sat = mannwhitneyu(sat_grad, sat_pos)
+
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    # Gráfico 8A: Barras de proporção (%)
+    colunas_foco = [c for c in ["Research", "Studying"] if c in tabela_prop.columns]
+    tabela_prop[colunas_foco].plot(
+        kind="bar",
+        ax=axes[0],
+        color=["#2b5c8f", "#d95f02"],
+        edgecolor="black",
+        linewidth=0.5,
+    )
+    axes[0].set_title(
+        f"Adoção para Pesquisa e Estudo\n(Qui-Quadrado p = {res_qui2.pvalue:.3f})",
+        fontsize=12,
+        fontweight="bold",
+    )
+    axes[0].set_xlabel("Nível Educacional", fontsize=10)
+    axes[0].set_ylabel("Percentual de Estudantes (%)", fontsize=10)
+    axes[0].tick_params(axis="x", rotation=0)
+    axes[0].legend(title="Finalidade")
+
+    # Gráfico 8B: Boxplot de Acurácia
+    sns.boxplot(
+        data=dados_pesquisa,
+        x="Nivel",
+        y="Accuracy_Rating",
+        palette=["#3470a3", "#e27c38"],
+        hue="Nivel",
+        legend=False,
+        ax=axes[1],
+    )
+    axes[1].set_title(
+        f"Acurácia Percebida (Pesquisa/Estudo)\n(Mann-Whitney p = {res_mwu_acc.pvalue:.3f})",
+        fontsize=12,
+        fontweight="bold",
+    )
+    axes[1].set_xlabel("Nível Educacional", fontsize=10)
+    axes[1].set_ylabel("Accuracy Rating (1 a 5)", fontsize=10)
+
+    # Gráfico 8C: Boxplot de Satisfação
+    sns.boxplot(
+        data=dados_pesquisa,
+        x="Nivel",
+        y="Satisfaction_Score",
+        palette=["#3470a3", "#e27c38"],
+        hue="Nivel",
+        legend=False,
+        ax=axes[2],
+    )
+    axes[2].set_title(
+        f"Satisfação Geral (Pesquisa/Estudo)\n(Mann-Whitney p = {res_mwu_sat.pvalue:.3f})",
+        fontsize=12,
+        fontweight="bold",
+    )
+    axes[2].set_xlabel("Nível Educacional", fontsize=10)
+    axes[2].set_ylabel("Satisfaction Score (0 a 10)", fontsize=10)
+
+    plt.tight_layout()
+    if salvar_grafico:
+        fig.savefig(salvar_grafico, bbox_inches="tight")
+
+    metricas = {
+        "Tabela_Proporcao_Percentual": tabela_prop,
+        "Chi2_pvalue": round(float(res_qui2.pvalue), 4),
+        "MannWhitney_Accuracy_pvalue": round(float(res_mwu_acc.pvalue), 4),
+        "MannWhitney_Satisfaction_pvalue": round(float(res_mwu_sat.pvalue), 4),
+    }
+    return metricas, fig
 
 
-def analisar_pergunta_9(df: pd.DataFrame):
-    """TODO (Amigo): Pergunta 9 - Impacto no Atendimento e Rotinas Corporativas
+def analisar_pergunta_9(
+    df: pd.DataFrame, salvar_grafico: Optional[str] = None
+) -> Tuple[pd.DataFrame, plt.Figure]:
+    """Pergunta 9: Impacto no Atendimento e Rotinas Corporativas.
 
-    Pergunta: No setor de Customer Support e Office Work, qual é a média de tempo semanal
-              economizado e qual o impacto percebido na produtividade?
-
-    Variáveis:
-        - AI_Purpose.isin(['Customer Support', 'Office Work'])
-        - Time_Saved_Hours_Per_Week
-        - Productivity_Score
-
-    Sugestão de Gráfico:
-        - Gráfico de barras com erro padrão ou Pointplot comparando os dois setores com a média global.
+    Compara horas semanais economizadas (Time_Saved_Hours_Per_Week) e
+    pontuação de produtividade (Productivity_Score) em Customer Support e Office Work.
+    Gráfico: Barras comparativas com rótulos de médias.
     """
-    pass
+    dados = df[df["AI_Purpose"].isin(["Customer Support", "Office Work"])].dropna(
+        subset=["Time_Saved_Hours_Per_Week", "Productivity_Score"]
+    ).copy()
+
+    resumo = (
+        dados.groupby("AI_Purpose")[
+            ["Time_Saved_Hours_Per_Week", "Productivity_Score"]
+        ]
+        .agg(["count", "mean", "median", "std"])
+        .round(2)
+    )
+
+    medias_tempo = dados.groupby("AI_Purpose")["Time_Saved_Hours_Per_Week"].mean()
+    medias_prod = dados.groupby("AI_Purpose")["Productivity_Score"].mean()
+
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+
+    # Gráfico 9.1: Horas economizadas
+    bars1 = axes[0].bar(
+        medias_tempo.index,
+        medias_tempo.values,
+        color=["#1f77b4", "#ff7f0e"],
+        edgecolor="black",
+        linewidth=0.6,
+        width=0.5,
+    )
+    axes[0].bar_label(bars1, fmt="%.2f h/sem", padding=3, fontweight="bold")
+    axes[0].set_title(
+        "Média de Horas Semanais Economizadas", fontsize=13, fontweight="bold"
+    )
+    axes[0].set_xlabel("Setor / Atividade", fontsize=11)
+    axes[0].set_ylabel("Horas Economizadas por Semana", fontsize=11)
+    axes[0].set_ylim(0, max(medias_tempo.values) * 1.25)
+
+    # Gráfico 9.2: Produtividade
+    bars2 = axes[1].bar(
+        medias_prod.index,
+        medias_prod.values,
+        color=["#2ca02c", "#17becf"],
+        edgecolor="black",
+        linewidth=0.6,
+        width=0.5,
+    )
+    axes[1].bar_label(bars2, fmt="%.2f", padding=3, fontweight="bold")
+    axes[1].set_title(
+        "Média da Pontuação de Produtividade Percebida",
+        fontsize=13,
+        fontweight="bold",
+    )
+    axes[1].set_xlabel("Setor / Atividade", fontsize=11)
+    axes[1].set_ylabel("Productivity Score (0 a 10)", fontsize=11)
+    axes[1].set_ylim(0, 10)
+
+    plt.tight_layout()
+    if salvar_grafico:
+        fig.savefig(salvar_grafico, bbox_inches="tight")
+    return resumo, fig
 
 
-def analisar_pergunta_10(df: pd.DataFrame):
-    """TODO (Amigo): Pergunta 10 - Faixa Etária e Padrão de Adoção
+def analisar_pergunta_10(
+    df: pd.DataFrame, salvar_grafico: Optional[str] = None
+) -> Tuple[Dict[str, Any], plt.Figure]:
+    """Pergunta 10: Faixa Etária e Padrão de Adoção.
 
-    Pergunta: Como a idade (Age) influencia a escolha da ferramenta de IA e a percepção geral
-              de satisfação com as soluções adotadas?
-
-    Variáveis:
-        - Age (numérica: pode criar faixas como '<20', '20-29', '30-39', '40+')
-        - AI_Tool
-        - Satisfaction_Score
-
-    Sugestão de Gráfico:
-        - Dispersão com jitter ou Boxplot de Satisfação por faixa etária / Ferramenta mais usada por idade.
+    10A: Associação entre Faixa Etária e Escolha de Ferramenta de IA (Heatmap e Qui-Quadrado).
+    10B: Relação entre Idade e Satisfação com a Solução (Regplot e Correlação de Spearman).
+    Gráfico: Painel com 2 subplots integrados.
     """
-    pass
+    df_idade = df.dropna(subset=["Age"]).copy()
+
+    # Criação de faixas etárias
+    df_idade["Faixa_Etaria"] = pd.cut(
+        df_idade["Age"],
+        bins=[15, 24, 34, 120],
+        labels=["16-24", "25-34", "35+"],
+        include_lowest=True,
+    )
+
+    # Agrupamento das principais ferramentas
+    principais_ferramentas = ["ChatGPT", "Google Gemini", "Microsoft Copilot"]
+    df_idade["Ferramenta_Grupo"] = df_idade["AI_Tool"].where(
+        df_idade["AI_Tool"].isin(principais_ferramentas), "Outras Ferramentas"
+    )
+
+    # 10A: Tabela de contingência e teste Qui-Quadrado
+    tabela_cont = pd.crosstab(df_idade["Faixa_Etaria"], df_idade["Ferramenta_Grupo"])
+    tabela_percent = (
+        tabela_cont.div(tabela_cont.sum(axis=1), axis=0) * 100
+    ).round(1)
+    res_qui2 = chi2_contingency(tabela_cont)
+
+    # 10B: Correlação não-paramétrica de Spearman entre Idade e Satisfação
+    dados_sat = df.dropna(subset=["Age", "Satisfaction_Score"]).copy()
+    res_spearman = spearmanr(dados_sat["Age"], dados_sat["Satisfaction_Score"])
+
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+    # Gráfico 10A: Heatmap de percentual de ferramentas por faixa etária
+    sns.heatmap(
+        tabela_percent,
+        annot=True,
+        fmt=".1f",
+        cmap="Blues",
+        cbar_kws={"label": "% na Faixa Etária"},
+        linewidths=0.5,
+        ax=axes[0],
+    )
+    axes[0].set_title(
+        f"Distribuição de Ferramentas por Faixa Etária (%)\n(Qui-Quadrado: p = {res_qui2.pvalue:.3f})",
+        fontsize=13,
+        fontweight="bold",
+    )
+    axes[0].set_xlabel("Ferramenta de IA", fontsize=11)
+    axes[0].set_ylabel("Faixa Etária", fontsize=11)
+
+    # Gráfico 10B: Regressão de Idade vs Satisfação
+    sns.regplot(
+        data=dados_sat,
+        x="Age",
+        y="Satisfaction_Score",
+        scatter_kws={"alpha": 0.5, "color": "#1f77b4"},
+        line_kws={"color": "#d62728", "linewidth": 2},
+        ax=axes[1],
+    )
+    axes[1].set_title(
+        f"Idade vs. Satisfação com IA\n(Spearman: rho = {res_spearman.statistic:.3f}, p = {res_spearman.pvalue:.3f})",
+        fontsize=13,
+        fontweight="bold",
+    )
+    axes[1].set_xlabel("Idade (anos)", fontsize=11)
+    axes[1].set_ylabel("Satisfaction Score (0 a 10)", fontsize=11)
+
+    plt.tight_layout()
+    if salvar_grafico:
+        fig.savefig(salvar_grafico, bbox_inches="tight")
+
+    metricas = {
+        "Percentual_Ferramentas_Idade": tabela_percent,
+        "Chi2_pvalue": round(float(res_qui2.pvalue), 4),
+        "Spearman_rho": round(float(res_spearman.statistic), 4),
+        "Spearman_pvalue": round(float(res_spearman.pvalue), 4),
+    }
+    return metricas, fig
