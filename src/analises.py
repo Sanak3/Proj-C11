@@ -173,6 +173,15 @@ def carregar_e_limpar_dados(
     df["Paid_User"] = np.where(df["Monthly_AI_Cost"] > 0, "Pago (> $0)", "Gratuito ($0)")
     df.loc[df["Monthly_AI_Cost"].isna(), "Paid_User"] = np.nan
 
+    # 8. Filtro de Sanidade e Limpeza de Outliers Extremos
+    # Remove registros espúrios com erros de digitação (ex: 23h diárias de IA, 97 anos em estudantes, renda mensal de $250k)
+    mascara_sanidade = (
+        (df["AI_Usage_Hours_Per_Day"].isna() | (df["AI_Usage_Hours_Per_Day"] <= 16.0))
+        & (df["Monthly_Income"].isna() | (df["Monthly_Income"] <= 50000.0))
+        & (df["Age"].isna() | (df["Age"] <= 80.0))
+    )
+    df = df[mascara_sanidade].copy()
+
     return df
 
 
@@ -558,12 +567,12 @@ def analisar_pergunta_7(
     profissao = df_prof["Profession"].fillna("")
 
     suporte_mask = profissao.str.contains(
-        r"Customer Support|Customer Service|Customer Success|Administrative|Data Entry|Assistente Administrativo|Atendimento ao Cliente",
+        r"Customer|Client|Kundenservice|Kundenbetreuer|Support|Service|Success|Experience|Administrative|Data Entry|Assistente|Atendimento",
         case=False,
         regex=True,
     )
     tecnologia_mask = profissao.str.contains(
-        r"Data|Software|Developer|Engineer|Information Technology|Computer Science|Machine Learning|Desenvolvedor|Desenvolvedora|Engenheiro|Analista de Dados|Artificial Intelligence",
+        r"Data|Daten|Software|Developer|Développeur|Softwareentwickler|Engineer|Ingenieur|Technology|Computer|Machine Learning|Desenvolvedor|Desenvolvedora|Engenheiro|Analista|Analyste|Intelligence|AI",
         case=False,
         regex=True,
     )

@@ -24,7 +24,7 @@ Este projeto consiste na aplicação prática do pipeline de **Ciência de Dados
 - **Nome:** [AI Usage and Impact on Students & Professionals](https://www.kaggle.com/datasets/eishatuzzuhra/ai-usage-and-impact-on-students-and-professionals)
 - **Autor(a):** Eisha Tuz Zuhra (Kaggle)
 - **Formato:** Arquivo CSV (`AI_Usage_and_Impact_on_Students_and_Professionals.csv`)
-- **Volume:** Mais de 1.000 registros, 19 variáveis (categóricas e numéricas)
+- **Volume:** 300 registros brutos (284 registros analisados após deduplicação e filtro de sanidade de outliers), 19 variáveis (categóricas e numéricas)
 - **Licença:** CC0: Public Domain
 
 ### Contextualização do Problema
