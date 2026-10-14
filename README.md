@@ -4,7 +4,7 @@
 
 ---
 
-## 👥 Integrantes do Grupo
+## Integrantes do Grupo
 | Nome                   | Matrícula | Curso |
 |:-----------------------|:----------|:------|
 | *Igor Araujo*          | *479*     | GES   |
@@ -13,13 +13,13 @@
 
 ---
 
-## 📌 Sobre o Projeto
+## Sobre o Projeto
 
 Este projeto consiste na aplicação prática do pipeline de **Ciência de Dados** para analisar e extrair insights valiosos a partir de um dataset real selecionado do Kaggle. O trabalho aborda etapas essenciais que vão desde o pré-processamento e higienização dos dados até a análise exploratória (EDA) e visualização gráfica, utilizando a biblioteca padrão do ecossistema de dados em Python.
 
 ---
 
-## 📊 Dataset Selecionado
+## Dataset Selecionado
 
 - **Nome:** [AI Usage and Impact on Students & Professionals](https://www.kaggle.com/datasets/eishatuzzuhra/ai-usage-and-impact-on-students-and-professionals)
 - **Autor(a):** Eisha Tuz Zuhra (Kaggle)
@@ -42,7 +42,7 @@ Com a explosão de ferramentas de Inteligência Artificial Generativa (como Chat
 
 ---
 
-## 🎯 As 10 Perguntas de Pesquisa & Negócio
+## As 10 Perguntas de Pesquisa & Negócio
 
 Para direcionar a análise exploratória e gerar insights estratégicos, o projeto investiga as seguintes 10 perguntas-chave:
 
@@ -59,7 +59,7 @@ Para direcionar a análise exploratória e gerar insights estratégicos, o proje
 
 ---
 
-## 🛠️ Tecnologias e Ferramentas
+## Tecnologias e Ferramentas
 
 O projeto é desenvolvido integralmente em **Python**, utilizando o conjunto de bibliotecas estudadas na disciplina:
 
@@ -72,7 +72,7 @@ O projeto é desenvolvido integralmente em **Python**, utilizando o conjunto de 
 
 ---
 
-## 📁 Estrutura do Repositório
+## Estrutura do Repositório
 
 ```text
 ├── data/
@@ -90,7 +90,7 @@ O projeto é desenvolvido integralmente em **Python**, utilizando o conjunto de 
 
 ---
 
-## 🚀 Como Executar o Projeto
+## Como Executar o Projeto
 
 ### 1. Clonar o repositório
 ```bash
@@ -126,7 +126,7 @@ python main.py
 
 ---
 
-## 📈 Etapas da Análise de Dados
+## Etapas da Análise de Dados
 
 1. **Entendimento do Problema e Exploração Inicial:** Inspeção das 19 colunas, tipos de dados, valores ausentes e inconsistências de formatação.
 2. **Limpeza e Pré-processamento:** Padronização de strings (ex: nomes de ferramentas e países), tratamento de valores ausentes e conversão de tipos numéricos.
@@ -137,7 +137,7 @@ python main.py
 
 ---
 
-## 📄 Licença e Referências
+## Licença e Referências
 
 - Dataset original disponibilizado por **Eisha Tuz Zuhra** sob a licença [CC0: Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) no Kaggle.
 - Projeto desenvolvido para fins estritamente acadêmicos no curso de Engenharia do **Inatel**.
