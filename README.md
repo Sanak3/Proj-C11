@@ -36,8 +36,9 @@ Com a explosão de ferramentas de Inteligência Artificial Generativa (como Chat
 | :--- | :--- | :--- |
 | **Demográficas** | `User_ID`, `Age`, `Gender`, `Country`, `Education_Level`, `Profession`, `Monthly_Income` | Perfil sociodemográfico, financeiro e acadêmico/profissional do entrevistado. |
 | **Perfil de Usuário** | `User_Type` | Classificação do usuário (`Student` ou `Professional`). |
-| **Comportamento com IA** | `AI_Tool`, `AI_Purpose`, `AI_Usage_Hours_Per_Day`, `Tasks_Performed` | Ferramenta principal utilizada, objetivo de uso, horas diárias dedicadas e tarefas executadas. |
-| **Impacto e Métricas** | `Productivity_Score`, `Accuracy_Rating`, `Satisfaction_Score`, `Time_Saved_Hours_Per_Week`, `AI_Experience_Years` | Avaliações numéricas de ganhos de produtividade, acurácia, satisfação, horas poupadas semanalmente e anos de experiência com IA. |
+| **Comportamento com IA** | `AI_Tool`, `AI_Purpose`, `AI_Usage_Hours_Per_Day`, `Tasks_Performed`, `Monthly_AI_Cost` | Ferramenta principal utilizada, objetivo de uso, horas diárias dedicadas, tarefas executadas e investimento financeiro mensal em IA. |
+| **Rotina e Recomendação** | `Work_or_Study_Hours_Per_Day`, `Would_Recommend` | Carga horária diária de trabalho/estudo e recomendação da ferramenta para terceiros. |
+| **Impacto e Métricas** | `Productivity_Score`, `Accuracy_Rating`, `Satisfaction_Score`, `Time_Saved_Hours_Per_Week` | Avaliações numéricas de ganhos de produtividade, acurácia percebida, satisfação geral e horas poupadas semanalmente. |
 
 ---
 
@@ -49,7 +50,7 @@ Para direcionar a análise exploratória e gerar insights estratégicos, o proje
 2. **Preferência de Ferramentas:** Quais são as ferramentas de IA mais populares no dataset e como essa distribuição se divide entre estudantes e profissionais?
 3. **Tempo de Uso vs. Economia Real:** Existe uma correlação positiva direta entre as horas diárias gastas com IA (`AI_Usage_Hours_Per_Day`) e o tempo semanal economizado (`Time_Saved_Hours_Per_Week`), ou há um ponto de estagnação/retornos decrescentes?
 4. **Finalidade de Uso e Satisfação:** Quais casos de uso (`AI_Purpose` – Ex: Coding, Writing, Research, Data Analysis) apresentam os maiores índices de satisfação (`Satisfaction_Score`) e acurácia percebida (`Accuracy_Rating`)?
-5. **Experiência Prévia em IA:** Usuários com mais anos de experiência em IA (`AI_Experience_Years`) conseguem obter notas significativamente maiores de produtividade e economia de tempo em comparação a iniciantes?
+5. **Investimento em IA (Planos Pagos vs. Gratuitos):** Usuários que investem financeiramente em ferramentas de IA (`Monthly_AI_Cost`) conseguem obter notas significativamente maiores de produtividade e economia de tempo em comparação aos que utilizam apenas versões gratuitas?
 6. **Acurácia Percebida por Ferramenta:** Existe discrepância estatística na acurácia reportada (`Accuracy_Rating`) entre as diferentes ferramentas de IA (ChatGPT, Gemini, Claude, Copilot, DeepSeek, etc.)?
 7. **Renda Mensal e Áreas de Atuação:** Profissionais de áreas que dependem fortemente de IA (como Tecnologia, Dados e Desenvolvimento) apresentam rendas mensais (`Monthly_Income`) superiores àqueles que usam para suporte ou tarefas administrativas?
 8. **Nível Educacional e Adoção de IA para Pesquisa:** O uso de IA para *Research* e *Studying* é mais prevalente e avaliado de forma diferente entre estudantes de graduação versus pós-graduação/mestrado/PhD?
