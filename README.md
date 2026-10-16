@@ -82,7 +82,7 @@ O projeto é desenvolvido integralmente em **Python**, utilizando o conjunto de 
 ├── src/
 │   └── analises.py                                           # Scripts auxiliares e funções de análise
 ├── slides/
-│   └── Apresentacao_Resultados_Pitch.pdf                     # Slides da apresentação de 5 minutos
+│   └── Projeto_C11.pptx.pdf                                  # Slides da apresentação de 5 minutos
 ├── .gitignore
 ├── README.md
 └── requirements.txt                                          # Dependências do projeto
